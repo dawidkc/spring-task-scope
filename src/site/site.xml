@@ -1,0 +1,30 @@
+<site>
+    <body>
+        <breadcrumbs>
+            <item name=""/>
+        </breadcrumbs>
+        <menu ref="modules"/>
+        <menu ref="parent"/>
+        <menu ref="reports"/>
+    </body>
+    <edit/>
+    <version position="right"/>
+    <publishDate position="none"/>
+    <poweredBy>
+        <logo name="Maven" href="https://maven.apache.org/">
+            <image src="https://maven.apache.org/images/logos/maven-feather.png"/>
+        </logo>
+    </poweredBy>
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>1.11.1</version>
+    </skin>
+    <custom>
+        <fluidoSkin>
+            <topBarEnabled>true</topBarEnabled>
+            <sideBarEnabled>true</sideBarEnabled>
+            <sourceLineNumbersEnabled>true</sourceLineNumbersEnabled>
+        </fluidoSkin>
+    </custom>
+</site>
