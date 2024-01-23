@@ -201,7 +201,7 @@
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>3.6.2</version>
                     <configuration>
-                        <additionalOptions>-package</additionalOptions>
+                        <show>package</show>
                         <defaultAuthor>dawidkc</defaultAuthor>
                         <doclint>none</doclint>
                         <failOnWarnings>false</failOnWarnings>
