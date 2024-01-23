@@ -33,13 +33,15 @@ public final class TaskScope implements Scope {
      * Create a new task scope with provided object as the context. The intent is to use this static method within a
      * {@code try-with-resources} block, example:
      * <p>
-     * <pre>{@code
+     * <pre>
+     * {@code
      * // task scoped beans are unresolved here
      * try (var ctx = TaskScope.create("data")) {
      *     // task scoped beans get resolved here
      * }
      * // task scoped beans are unresolved here
-     * }</pre>
+     * }
+     * </pre>
      *
      * @param contextObject any object which can be considered task context
      * @return auto-closeable {@link Context} object
