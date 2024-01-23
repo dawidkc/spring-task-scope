@@ -13,7 +13,7 @@
     <licenses>
         <license>
             <name>MIT License</name>
-            <url>LICENSE</url>
+            <url>LICENSE.md</url>
         </license>
     </licenses>
     <url>https://github.com/dawidkc/spring-task-scope</url>
@@ -296,6 +296,29 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-readme</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target name="copy README.md to site">
+                                <copy file="${basedir}/README.md"
+                                      tofile="${basedir}/target/generated-site/markdown/index.md"
+                                      overwrite="true"/>
+                                <copy todir="${basedir}/target/generated-site/markdown/docs" overwrite="true">
+                                    <fileset dir="docs"/>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

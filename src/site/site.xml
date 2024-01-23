@@ -3,6 +3,10 @@
         <breadcrumbs>
             <item name=""/>
         </breadcrumbs>
+        <menu name="Overview">
+            <item name="Introduction" href="index.html" />
+            <item name="Usage" href="docs/usage.html" />
+        </menu>
         <menu ref="modules"/>
         <menu ref="parent"/>
         <menu ref="reports"/>
