@@ -9,8 +9,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 
 /**
- * Scope annotation for task scope. Marks a given Spring Bean as task-bound. Such service is resolvable only when a task
+ * Scope annotation for task scope. Marks a given Spring Bean as task-bound. Such bean is resolvable only when a task
  * scope is active.
+ *
+ * @author dawidkc
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER})

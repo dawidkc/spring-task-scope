@@ -11,6 +11,8 @@ import org.aspectj.lang.reflect.MethodSignature;
 
 /**
  * Aspect declaration, configuring the use of {@code @TaskContext}.
+ *
+ * @author dawidkc
  */
 @Slf4j
 @Aspect

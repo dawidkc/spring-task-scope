@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Spring configuration defining task scope and providing beans.
+ *
+ * @author dawidkc
  */
 @SuppressWarnings("unused")
 @Configuration

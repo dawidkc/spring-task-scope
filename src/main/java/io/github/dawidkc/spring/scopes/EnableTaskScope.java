@@ -11,21 +11,19 @@ import org.springframework.context.annotation.Import;
 /**
  * Enables support for the task scope. To be used on the {@code @Configuration} classes as follows:
  *
- * <pre>
- * {@code
- * @Configuration
- * @EnableTaskScope
+ * <pre><code>
+ *{@literal @}Configuration
+ *{@literal @}EnableTaskScope
  * class TestConfiguration {
  *
- *     @Bean
- *     @TaskScoped
+ *    {@literal @}Bean
+ *    {@literal @}TaskScoped
  *     Service serviceBean() {
  *         //...
  *     }
  *
  * }
- * }
- * </pre>
+ * </code></pre>
  * <p>
  * In the above example {@code Service} bean is bound to a scope of a particular task. The task can be initialized via
  * AOP (see {@link TaskContext}) or programmatically (see {@link TaskScope#create(Object)}).
@@ -34,16 +32,16 @@ import org.springframework.context.annotation.Import;
  * TaskScope#getCurrentContext()} or injecting {@link TaskScope.Context}. A preferred way to initialize service is to
  * provide task scope via the constructor, e.g. when task context is a plain {@code String}:
  * <p>
- * <pre>
- * {@code
- *     @Bean
- *     @TaskScoped
+ * <pre><code>
+ *    {@literal @}Bean
+ *    {@literal @}TaskScoped
  *     Service serviceBean(TaskScope.Context<String> context) {
  *         return new Service(context.getContextObject());
  *     }
- * }
- * </pre>
+ * </code></pre>
  * <p>
+ *
+ * @author dawidkc
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
