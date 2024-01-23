@@ -129,6 +129,8 @@ class TaskScopeTest {
 
     @Test
     void should_resolve_injected_context_correctly_in_nested_scopes() {
+        // GIVEN 2 nested task scopes
+        // THEN appropriate context object is resolved from the injected TaskScope.Context<>
         try (TaskScope.Context<TestContext> ctx1 = TaskScope.create(TestContext.of("ctx"))) {
             assertThat(taskScopeContext.getContextObject()).isSameAs(ctx1.getContextObject());
             try (TaskScope.Context<TestContext> ctx2 = TaskScope.create(TestContext.of("ctx"))) {
@@ -139,11 +141,32 @@ class TaskScopeTest {
 
     @Test
     void should_treat_identical_contexts_as_not_equal_in_nested_scopes() {
+        // GIVEN 2 "identical" nested task scopes
         try (TaskScope.Context<TestContext> ctx1 = TaskScope.create(TestContext.of("ctx"))) {
             try (TaskScope.Context<TestContext> ctx2 = TaskScope.create(TestContext.of("ctx"))) {
+                // THEN underlying context can be equal
+                assertThat(ctx1.getContextObject()).isEqualTo(ctx2.getContextObject());
+                // ...BUT actual contexts differ
+                assertThat(ctx1).isNotEqualTo(ctx2);
                 assertThat(ctx1).isNotSameAs(ctx2);
             }
         }
+    }
+
+    @Test
+    void should_only_allow_removal_of_the_current_context() {
+        // GIVEN 2 nested contexts
+        final TaskScope.Context<TestContext> ctx1 = TaskScope.create(TestContext.of("ctx"));
+        final TaskScope.Context<TestContext> ctx2 = TaskScope.create(TestContext.of("ctx"));
+        // WHEN closing contexts in incorrect order
+        // THEN exception is thrown
+        assertThatThrownBy(() -> {
+            ctx1.close();
+        })
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Only currently active context may be removed");
+        ctx2.close();
+        ctx1.close();
     }
 
     @Value(staticConstructor = "of")
