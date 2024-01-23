@@ -28,9 +28,13 @@ jobs:
         with:
           name: Release v${{ github.ref_name }}
           artifacts: "target/spring-task-scope*.jar"
+      - name: Upload GitHub Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "target/site"
   deploy:
     needs: build
-    name: Deploy to GH Pages
+    name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
     permissions:
       pages: write
@@ -39,10 +43,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Upload GitHub Pages Artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: "target/site"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
