@@ -22,8 +22,24 @@ jobs:
       - name: Build with Maven
         run: mvn -B package site --file pom.xml
       - name: Create Release
-        id: create_release
         uses: ncipollo/release-action@v1
         with:
           name: Release v${{ github.ref_name }}
           artifacts: "target/spring-task-scope*.jar"
+      - name: Upload GitHub Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "target/site"
+    deploy:
+      needs: build
+      permissions:
+        pages: write
+        id-token: write
+      environment:
+        name: github-pages
+        url: ${{ steps.deployment.outputs.page_url }}
+      runs-on: ubuntu-latest
+      steps:
+        - name: Deploy to GitHub Pages
+          id: deployment
+          uses: actions/deploy-pages@v4
