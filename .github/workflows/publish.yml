@@ -1,5 +1,8 @@
 name: Publish package to the Maven Central Repository and GitHub Packages
 on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
   release:
     types: [created]
   workflow_dispatch:
@@ -22,6 +25,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up Java for publishing to Maven Central Repository
+        if: secrets.OSSRH_USERNAME != null
         uses: actions/setup-java@v3
         with:
           java-version: '8'
@@ -30,6 +34,7 @@ jobs:
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
       - name: Publish to the Maven Central Repository
+        if: secrets.OSSRH_USERNAME != null
         run: mvn -B -Pmaven-central deploy
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
