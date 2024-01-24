@@ -20,9 +20,45 @@ context-dependent, most of its public methods will contain a parameter related t
 be to bind that context to the bean instance. It can be as simple as providing the context parameter in the constructor,
 but then we stop profiting from Spring's IoC container.
 
-Task Scope allows to associate Spring bean instance with an arbitrary context which is created elsewhere.
+Task Scope allows to associate Spring bean instance with an arbitrary context which is created elsewhere. So one can
+create (possibly nested) task scope like so:
 
-### Example
+```
+void method() {
+    // ...
+    // task scope is created
+    try (final TaskScopeContext<Task> ctx = TaskScope.create(/* any object */)) {
+        // (any @TaskScoped bean is resolved here)
+        // ...
+    } // task scope is closed
+    // ...
+}
+```
+
+and any `@TaskScoped` bean can inject `TaskScopeContext<T>` to extract the associated value:
+
+```
+@TaskScoped
+@Component
+public class Service {
+
+    private final Task task;
+
+    @Autowired
+    public Service(TaskScopeContext<Task> taskContext) {
+        this.task = taskContext.getContextObject();
+    }
+
+    public void work() {
+        // ...
+    }
+}
+```
+
+(This is the preferred way to define such bean, although nothing prevents you from just keeping
+the `TaskScopeContext<Task>` reference in bean's field.)
+
+### Example use case
 
 Imagine a `Service` which starts processing of an arbitrary task (say, based on changing disk content, received JMS
 message, etc.). This service transfers processing to `SubService1` which may invoke further services, like so:
@@ -54,9 +90,9 @@ finished)
 If we want to have everything stateless, it is very much possible that task-related context object will need to be
 passed down with every invoked method, which isn't really ideal since it often just pollutes method signatures.
 
-If you imagine additional situation where one of the above `SubServicesX` does not require knowledge about the task
+If you imagine additional situation where one of the above `SubServiceX` does not require knowledge about the task
 context, but a subsequent one (`SubService(X+1)`) does, that means that we'd probably pass such context object
-through `SubServicesX` for the sole purpose of transferring the parameter downstream.
+through `SubServiceX` for the sole purpose of transferring the parameter downstream.
 
 To avoid passing some kind of task-related parameter downstream in all invoked methods `A`, `B`, `C`, one could decide
 to instead introduce a state in those `SubServiceX` classes, which do require knowledge about the task context. Beans of

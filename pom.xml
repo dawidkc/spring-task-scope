@@ -304,10 +304,16 @@
                         </goals>
                         <configuration>
                             <target name="copy README.md to site">
+                                <filter token="VERSION" value="${project.version}"/>
                                 <copy file="${basedir}/README.md"
                                       tofile="${basedir}/target/generated-site/markdown/index.md"
                                       overwrite="true"/>
-                                <copy todir="${basedir}/target/generated-site/markdown/docs" overwrite="true">
+                                <copy file="${basedir}/LICENSE.md"
+                                      tofile="${basedir}/target/generated-site/markdown/LICENSE.md"
+                                      overwrite="true"/>
+                                <copy todir="${basedir}/target/generated-site/markdown/docs"
+                                      overwrite="true"
+                                      filtering="true">
                                     <fileset dir="docs"/>
                                 </copy>
                             </target>
