@@ -106,7 +106,7 @@ public class SubService1 {
 ```
 
 (Note that now if a service down the line does not require task object, it could be a regular singleton bean - only
-services requiring Task instance need to be `@TaskScoped` and inject `TaskScopeContext<Task>`.)
+services requiring `Task` instance need to be `@TaskScoped` and inject `TaskScopeContext<Task>`.)
 
 And the task is maintained through a `try-with-resources` block:
 
