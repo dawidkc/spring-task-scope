@@ -2,6 +2,8 @@ name: Publish package to the Maven Central Repository and GitHub Packages
 on:
   release:
     types: [created]
+  workflow_dispatch:
+    inputs: null
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -11,10 +13,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up Java for publishing to GitHub Packages
-          uses: actions/setup-java@v3
-          with:
-            java-version: '8'
-            distribution: 'zulu'
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'zulu'
       - name: Publish to GitHub Packages
         run: mvn -B -Pgithub deploy
         env:
