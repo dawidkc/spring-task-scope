@@ -63,7 +63,7 @@ to instead introduce a state in those `SubServiceX` classes, which do require kn
 those classes would be bound to the existence of the task. That would allow the removal of passing the parameter
 explicitly when invoking subsequent services, instead relying on injected state.
 
-The beans get modified from e.g.
+Originally beans would look like this:
 
 ```
 @Component
@@ -73,15 +73,17 @@ public class SubService1 {
     SubService2 subService2;
 
     void work(Task task) {
-        // some processing - note that it's not even clear that SubService1 even requires Task object here
-        // - but if SubService2 (or anything further downstream) does, this parameter gets passed along
+        // some processing
         subService2.work(task);
     }
 
 }
 ```
 
-to something like that:
+(Note that it's not even clear that `SubService1` even requires `Task` object here but if `SubService2` (or anything
+further downstream) does, this parameter gets passed along.)
+
+We can modify bean definition to something like that:
 
 ```
 @TaskScoped
@@ -96,14 +98,15 @@ public class SubService1 {
 
     void work() {
         final Task task = taskContext.getContextObject();
-        // some processing - note that now if a service down the line does not require task object, it could
-        // be a regular singleton bean - only services requiring Task instance need to be @TaskScoped and inject
-        // TaskScopeContext<Task>
+        // some processing
         subService2.work();
     }
 
 }
 ```
+
+(Note that now if a service down the line does not require task object, it could be a regular singleton bean - only
+services requiring Task instance need to be `@TaskScoped` and inject `TaskScopeContext<Task>`.)
 
 And the task is maintained through a `try-with-resources` block:
 
