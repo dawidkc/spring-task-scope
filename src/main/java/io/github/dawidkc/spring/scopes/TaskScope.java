@@ -1,6 +1,7 @@
 package io.github.dawidkc.spring.scopes;
 
 import java.util.Deque;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
@@ -50,7 +51,11 @@ public final class TaskScope implements Scope {
      */
     @Override
     public Object get(final String name, final ObjectFactory<?> objectFactory) {
-        return getCurrentContext().getBeans().computeIfAbsent(name, s1 -> objectFactory.getObject());
+        final Map<String, Object> beans = getCurrentContext().getBeans();
+        if (beans.get(name) == null) {
+            beans.put(name, objectFactory.getObject());
+        }
+        return beans.get(name);
     }
 
     /**
