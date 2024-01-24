@@ -27,16 +27,8 @@ class TaskScopeConfiguration {
      */
     @Bean
     @TaskScoped
-    <T> TaskScope.Context<T> taskScopeContext() {
+    <T> TaskScopeContext<T> taskScopeContext() {
         return TaskScope.getCurrentContext();
-    }
-
-    /**
-     * Registers aspect to process {@link TaskContext} usages.
-     */
-    @Bean
-    TaskScopeAspect taskScopeAspect() {
-        return new TaskScopeAspect();
     }
 
 }

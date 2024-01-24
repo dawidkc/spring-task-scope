@@ -1,4 +1,4 @@
-package io.github.dawidkc.spring.scopes;
+package io.github.dawidkc.spring.scopes.aop;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

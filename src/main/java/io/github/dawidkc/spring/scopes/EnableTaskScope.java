@@ -6,6 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import io.github.dawidkc.spring.scopes.aop.TaskContext;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -29,7 +30,7 @@ import org.springframework.context.annotation.Import;
  * AOP (see {@link TaskContext}) or programmatically (see {@link TaskScope#create(Object)}).
  * <p>
  * A task-scoped service can then extract the contextual object associated with a given scope by invoking {@link
- * TaskScope#getCurrentContext()} or injecting {@link TaskScope.Context}. A preferred way to initialize service is to
+ * TaskScope#getCurrentContext()} or injecting {@link TaskScopeContext}. A preferred way to initialize service is to
  * provide task scope via the constructor, e.g. when task context is a plain {@code String}:
  * <p>
  * <pre><code>

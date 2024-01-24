@@ -2,6 +2,7 @@ package io.github.dawidkc.spring.scopes;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.dawidkc.spring.scopes.aop.TaskContext;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,7 @@ class TaskScopeAOPTest {
     Service service;
 
     @Autowired
-    TaskScope.Context<TestContext> context;
+    TaskScopeContext<TestContext> context;
 
     @Test
     void should_create_new_task_scope_for_first_annotated_param() {

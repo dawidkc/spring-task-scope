@@ -1,16 +1,9 @@
 package io.github.dawidkc.spring.scopes;
 
-import java.io.Closeable;
 import java.util.Deque;
-import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.atomic.AtomicLong;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.Scope;
@@ -27,7 +20,7 @@ public final class TaskScope implements Scope {
 
     public static final String TASK_SCOPE_NAME = "task";
 
-    private static final ThreadLocal<Deque<Context<?>>> CONTEXT_STACK =
+    private static final ThreadLocal<Deque<TaskScopeContext<?>>> CONTEXT_STACK =
             ThreadLocal.withInitial(ConcurrentLinkedDeque::new);
 
     /**
@@ -43,11 +36,11 @@ public final class TaskScope implements Scope {
      * </code></pre>
      *
      * @param contextObject any object which can be considered task context
-     * @return auto-closeable {@link Context} object
+     * @return auto-closeable {@link TaskScopeContext} object
      */
-    public static <T> Context<T> create(final T contextObject) {
+    public static <T> TaskScopeContext<T> create(final T contextObject) {
         log.debug("Creating new task scope with context {}", contextObject);
-        Context<T> context = new Context<>(contextObject);
+        TaskScopeContext<T> context = new TaskScopeContext<>(contextObject);
         CONTEXT_STACK.get().push(context);
         return context;
     }
@@ -99,7 +92,7 @@ public final class TaskScope implements Scope {
         return null;
     }
 
-    private static void delete(final Context<?> context) {
+    static void delete(final TaskScopeContext<?> context) {
         log.debug("Attempting to remove task scope with context {}", context.getContextObject());
         if (context != getCurrentContext()) {
             throw new IllegalStateException("Only currently active context may be removed");
@@ -112,11 +105,11 @@ public final class TaskScope implements Scope {
     }
 
     @SuppressWarnings("unchecked")
-    static <T> Context<T> getCurrentContext() {
+    static <T> TaskScopeContext<T> getCurrentContext() {
         if (CONTEXT_STACK.get().isEmpty()) {
             throw new NoSuchElementException("No task context available");
         }
-        return (Context<T>) CONTEXT_STACK.get().peek();
+        return (TaskScopeContext<T>) CONTEXT_STACK.get().peek();
     }
 
     /**
@@ -125,40 +118,6 @@ public final class TaskScope implements Scope {
     @SuppressWarnings("unchecked")
     public static <T> T getCurrentContextObject() {
         return (T) getCurrentContext().getContextObject();
-    }
-
-    /**
-     * Context holder object for task scope.
-     *
-     * @see Context#getContextObject()
-     */
-    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class Context<T> implements Closeable {
-
-        private static final AtomicLong COUNTER = new AtomicLong();
-
-        @Getter(AccessLevel.PRIVATE)
-        private final Map<String, Object> beans = new ConcurrentHashMap<>();
-
-        @Getter(AccessLevel.PRIVATE)
-        private final Map<String, Runnable> destructionCallbacks = new ConcurrentHashMap<>();
-
-        /**
-         * Returns the context object provided when opening scope.
-         */
-        @Getter
-        private final T contextObject;
-
-        /**
-         * Returns the unique context ID.
-         */
-        @Getter
-        private final long id = COUNTER.getAndIncrement();
-
-        @Override
-        public void close() {
-            TaskScope.delete(this);
-        }
     }
 
 }

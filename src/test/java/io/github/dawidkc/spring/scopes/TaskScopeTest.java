@@ -30,7 +30,7 @@ class TaskScopeTest {
     Service service;
 
     @Autowired
-    TaskScope.Context<TestContext> taskScopeContext;
+    TaskScopeContext<TestContext> taskScopeContext;
 
     @Test
     void should_result_in_error_when_no_context_available_for_task_scoped_bean() {
@@ -56,7 +56,7 @@ class TaskScopeTest {
     void should_inject_task_scoped_bean_within_context() {
         // GIVEN a task scope
         String result1, result2;
-        try (TaskScope.Context<TestContext> ctx = TaskScope.create(TestContext.of("ctx"))) {
+        try (TaskScopeContext<TestContext> ctx = TaskScope.create(TestContext.of("ctx"))) {
             // WHEN invoking task-scoped bean twice
             result1 = service.getId();
             result2 = service.getId();
@@ -71,7 +71,7 @@ class TaskScopeTest {
     void should_inject_task_scoped_bean_within_separate_contexts() {
         // GIVEN a task scope
         String result1;
-        try (TaskScope.Context<TestContext> ctx = TaskScope.create(TestContext.of("ctx"))) {
+        try (TaskScopeContext<TestContext> ctx = TaskScope.create(TestContext.of("ctx"))) {
             // WHEN invoking task-scoped bean
             result1 = service.getId();
         }
@@ -87,11 +87,11 @@ class TaskScopeTest {
         // GIVEN a task scope
         String result1, result2;
         final String ctxObject = "ctx";
-        try (TaskScope.Context<TestContext> ctx = TaskScope.create(TestContext.of(ctxObject))) {
+        try (TaskScopeContext<TestContext> ctx = TaskScope.create(TestContext.of(ctxObject))) {
             result1 = service.getId();
         }
         // ...AND another task scope with same context Object
-        try (TaskScope.Context<TestContext> ctx = TaskScope.create(TestContext.of(ctxObject))) {
+        try (TaskScopeContext<TestContext> ctx = TaskScope.create(TestContext.of(ctxObject))) {
             result2 = service.getId();
         }
         // THEN two separate instances of service are created
@@ -105,10 +105,10 @@ class TaskScopeTest {
         // GIVEN a task scope
         String result1, result2;
         final String ctxObject = "ctx";
-        try (TaskScope.Context<TestContext> ctx1 = TaskScope.create(TestContext.of(ctxObject))) {
+        try (TaskScopeContext<TestContext> ctx1 = TaskScope.create(TestContext.of(ctxObject))) {
             result1 = service.getId();
             // ...AND another task scope with same context Object
-            try (TaskScope.Context<TestContext> ctx2 = TaskScope.create(TestContext.of(ctxObject))) {
+            try (TaskScopeContext<TestContext> ctx2 = TaskScope.create(TestContext.of(ctxObject))) {
                 result2 = service.getId();
             }
         }
@@ -121,7 +121,7 @@ class TaskScopeTest {
     @Test
     void should_resolve_injected_context_correctly() {
         // GIVEN a task scope
-        try (TaskScope.Context<TestContext> ctx = TaskScope.create(TestContext.of("ctx"))) {
+        try (TaskScopeContext<TestContext> ctx = TaskScope.create(TestContext.of("ctx"))) {
             // THEN injected TaskScope context must contain current context object
             assertThat(taskScopeContext.getContextObject()).isSameAs(ctx.getContextObject());
         }
@@ -131,9 +131,9 @@ class TaskScopeTest {
     void should_resolve_injected_context_correctly_in_nested_scopes() {
         // GIVEN 2 nested task scopes
         // THEN appropriate context object is resolved from the injected TaskScope.Context<>
-        try (TaskScope.Context<TestContext> ctx1 = TaskScope.create(TestContext.of("ctx"))) {
+        try (TaskScopeContext<TestContext> ctx1 = TaskScope.create(TestContext.of("ctx"))) {
             assertThat(taskScopeContext.getContextObject()).isSameAs(ctx1.getContextObject());
-            try (TaskScope.Context<TestContext> ctx2 = TaskScope.create(TestContext.of("ctx"))) {
+            try (TaskScopeContext<TestContext> ctx2 = TaskScope.create(TestContext.of("ctx"))) {
                 assertThat(taskScopeContext.getContextObject()).isSameAs(ctx2.getContextObject());
             }
         }
@@ -142,8 +142,8 @@ class TaskScopeTest {
     @Test
     void should_treat_identical_contexts_as_not_equal_in_nested_scopes() {
         // GIVEN 2 "identical" nested task scopes
-        try (TaskScope.Context<TestContext> ctx1 = TaskScope.create(TestContext.of("ctx"))) {
-            try (TaskScope.Context<TestContext> ctx2 = TaskScope.create(TestContext.of("ctx"))) {
+        try (TaskScopeContext<TestContext> ctx1 = TaskScope.create(TestContext.of("ctx"))) {
+            try (TaskScopeContext<TestContext> ctx2 = TaskScope.create(TestContext.of("ctx"))) {
                 // THEN underlying context can be equal
                 assertThat(ctx1.getContextObject()).isEqualTo(ctx2.getContextObject());
                 // ...BUT actual contexts differ
@@ -156,8 +156,8 @@ class TaskScopeTest {
     @Test
     void should_only_allow_removal_of_the_current_context() {
         // GIVEN 2 nested contexts
-        final TaskScope.Context<TestContext> ctx1 = TaskScope.create(TestContext.of("ctx"));
-        final TaskScope.Context<TestContext> ctx2 = TaskScope.create(TestContext.of("ctx"));
+        final TaskScopeContext<TestContext> ctx1 = TaskScope.create(TestContext.of("ctx"));
+        final TaskScopeContext<TestContext> ctx2 = TaskScope.create(TestContext.of("ctx"));
         // WHEN closing contexts in incorrect order
         // THEN exception is thrown
         assertThatThrownBy(() -> {

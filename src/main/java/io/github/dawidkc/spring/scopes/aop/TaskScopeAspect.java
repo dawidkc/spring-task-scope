@@ -1,7 +1,9 @@
-package io.github.dawidkc.spring.scopes;
+package io.github.dawidkc.spring.scopes.aop;
 
 import java.lang.annotation.Annotation;
 
+import io.github.dawidkc.spring.scopes.TaskScope;
+import io.github.dawidkc.spring.scopes.TaskScopeContext;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.SoftException;
@@ -18,7 +20,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 @Aspect
 class TaskScopeAspect {
 
-    @Around("execution(* *(.., @io.github.dawidkc.spring.scopes.TaskContext (*), ..))")
+    @Around("execution(* *(.., @io.github.dawidkc.spring.scopes.aop.TaskContext (*), ..))")
     public Object wrapInTask(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         log.debug("Applying task scope to {}", proceedingJoinPoint.getSignature());
         MethodSignature signature = (MethodSignature) proceedingJoinPoint.getSignature();
@@ -58,7 +60,7 @@ class TaskScopeAspect {
             final Object ctx
     ) {
         return () -> {
-            try (TaskScope.Context<Object> context = TaskScope.create(ctx)) {
+            try (TaskScopeContext<Object> context = TaskScope.create(ctx)) {
                 return supplier.get();
             }
         };

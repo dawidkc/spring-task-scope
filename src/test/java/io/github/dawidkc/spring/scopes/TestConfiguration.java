@@ -1,5 +1,6 @@
 package io.github.dawidkc.spring.scopes;
 
+import io.github.dawidkc.spring.scopes.aop.EnableAOPTaskScope;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.context.annotation.Bean;
@@ -8,13 +9,13 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @SuppressWarnings("unused")
 @Configuration
-@EnableTaskScope
+@EnableAOPTaskScope
 @EnableAspectJAutoProxy
 class TestConfiguration {
 
     @Bean
     @TaskScoped
-    Service serviceBean(TaskScope.Context<String> context) {
+    Service serviceBean(TaskScopeContext<String> context) {
         return new Service(context.getContextObject());
     }
 

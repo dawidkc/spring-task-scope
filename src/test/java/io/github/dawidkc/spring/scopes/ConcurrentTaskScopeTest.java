@@ -38,7 +38,7 @@ class ConcurrentTaskScopeTest {
         Callable<Boolean> task = () -> {
             final String contextObject = "whatever_" + Thread.currentThread().getId();
             String actualData;
-            try (TaskScope.Context<?> unused = TaskScope.create(contextObject)) {
+            try (TaskScopeContext<?> unused = TaskScope.create(contextObject)) {
                 actualData = service.getData();
             }
             return actualData.equals(contextObject);
