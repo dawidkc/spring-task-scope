@@ -13,17 +13,17 @@ import org.springframework.context.annotation.Import;
  * Enables support for the task scope. To be used on the {@code @Configuration} classes as follows:
  *
  * <pre><code>
- *{@literal @}Configuration
- *{@literal @}EnableTaskScope
- * class TestConfiguration {
+ * {@literal @}Configuration
+ * {@literal @}EnableTaskScope
+ *  class TestConfiguration {
  *
- *    {@literal @}Bean
- *    {@literal @}TaskScoped
- *     Service serviceBean() {
- *         //...
- *     }
+ *     {@literal @}Bean
+ *     {@literal @}TaskScoped
+ *      Service serviceBean() {
+ *          //...
+ *      }
  *
- * }
+ *  }
  * </code></pre>
  * <p>
  * In the above example {@code Service} bean is bound to a scope of a particular task. The task can be initialized via

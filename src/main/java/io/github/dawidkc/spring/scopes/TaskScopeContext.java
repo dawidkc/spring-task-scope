@@ -25,17 +25,23 @@ public class TaskScopeContext<T> implements Closeable {
     @Getter(AccessLevel.PACKAGE)
     private final Map<String, Runnable> destructionCallbacks = new ConcurrentHashMap<>();
 
+    private final T contextObject;
+
+    private final long id = COUNTER.getAndIncrement();
+
     /**
      * Returns the context object provided when opening scope.
      */
-    @Getter
-    private final T contextObject;
+    public T getContextObject() {
+        return contextObject;
+    }
 
     /**
      * Returns the unique context ID.
      */
-    @Getter
-    private final long id = COUNTER.getAndIncrement();
+    public long getId() {
+        return id;
+    }
 
     @Override
     public void close() {
