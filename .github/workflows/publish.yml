@@ -25,8 +25,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up Java for publishing to Maven Central Repository
-        if: secrets.OSSRH_USERNAME != null
+        if: ${{ env.MAVEN_USERNAME != null }}
         uses: actions/setup-java@v3
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
         with:
           java-version: '8'
           distribution: 'zulu'
@@ -34,7 +36,7 @@ jobs:
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
       - name: Publish to the Maven Central Repository
-        if: secrets.OSSRH_USERNAME != null
+        if: ${{ env.MAVEN_USERNAME != null }}
         run: mvn -B -Pmaven-central deploy
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
