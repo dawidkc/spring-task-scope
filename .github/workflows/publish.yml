@@ -15,13 +15,22 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v4
+      - name: Install GPG secret key
+        if: ${{ env.GPG_SECRET_KEY != null }}
+        run: |
+          # Install GPG secret key
+          cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
+          # Verify GPG secret key
+          gpg --list-secret-keys --keyid-format LONG
+        env:
+          GPG_SECRET_KEY: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
       - name: Set up Java for publishing to GitHub Packages
         uses: actions/setup-java@v3
         with:
           java-version: '8'
           distribution: 'zulu'
       - name: Publish to GitHub Packages
-        run: mvn -B -Pgithub deploy
+        run: mvn -B -Pgithub,sign -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSPHRASE }} clean deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up Java for publishing to Maven Central Repository
@@ -37,7 +46,7 @@ jobs:
           server-password: MAVEN_PASSWORD
       - name: Publish to the Maven Central Repository
         if: ${{ env.MAVEN_USERNAME != null }}
-        run: mvn -B -Pmaven-central deploy
+        run: mvn -B -Pmaven-central,sign -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSPHRASE }} clean deploy
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
