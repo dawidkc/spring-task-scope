@@ -2,8 +2,10 @@
 
 ## Dependency
 
-Currently, the library is available via GitHub Packages. If you're working with Maven, you need to add this to your
-project's dependencies:
+The library is available
+via [GitHub Packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry)
+and [Maven Central](https://central.sonatype.com/artifact/io.github.dawidkc.spring/spring-task-scope). If you're working
+with Maven, you need to add this to your project's dependencies:
 
 ```
 <dependency>
@@ -12,12 +14,6 @@ project's dependencies:
   <version>@VERSION@</version>
 </dependency>
 ```
-
-(Please
-see [Working with the Apache Maven registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry)
-on GitHub for details.)
-
-(As an alternative, you can also use https://jitpack.io/.)
 
 ## Configuration
 
@@ -102,9 +98,9 @@ public class Worker {
 }
 ```
 
-## Activating task scope
+## Activating/deactivating task scope
 
-You can activate task scope wiith a `try-with-resources` block:
+You can activate task scope with a `try-with-resources` block:
 
 ```
 // task scope inactive
@@ -117,6 +113,9 @@ try (final TaskScopeContext<String> ctx1 = TaskScope.create("context")) {
 Beans with `@TaskScoped` are resolvable only when a task scope is active. Trying to resolve a bean outside of task scope
 will result in `NoSuchElementException`. Any object can be treated as contextual object (in the above example it is a
 String with the value `"context"`).
+
+Task scope should be activated within `try-with-resources`, because it's `AutoCloseable`. You can also close the scope
+manually, but this is not really recommended (though it works fine).
 
 ## Using @TaskContext to activate task scope within a method
 

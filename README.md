@@ -3,10 +3,23 @@
 [![Build](https://github.com/dawidkc/spring-task-scope/actions/workflows/maven.yml/badge.svg)](https://github.com/dawidkc/spring-task-scope/actions/workflows/maven.yml)
 [![GitHub License](https://img.shields.io/github/license/dawidkc/spring-task-scope)](LICENSE.md)
 [![GitHub Release](https://img.shields.io/github/v/release/dawidkc/spring-task-scope)](https://github.com/dawidkc/spring-task-scope/releases/latest)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.dawidkc.spring/spring-task-scope)](https://central.sonatype.com/artifact/io.github.dawidkc.spring/spring-task-scope)
 [![Project Page](https://img.shields.io/badge/Project%20Page-GitHub%20Pages-violet)](https://dawidkc.github.io/spring-task-scope/)
 [![JavaDoc](https://img.shields.io/badge/JavaDoc-GitHub%20Pages-violet)](https://dawidkc.github.io/spring-task-scope/apidocs/index.html)
 
-This is a (very simple) implementation of a simple task scope for Spring 5+. Requires Java 8+.
+A (very simple) implementation of a simple task scope for Spring 5+. Requires Java 8+.
+
+## What is a task scope?
+
+It is a custom Spring _bean scope_ (like singleton, prototype, or request) which is started and stopped arbitrarily,
+with any object serving as a _task context_.
+
+_Task-scoped beans_:
+
+- exist only for the duration of the scope
+- have access (through injection) to _task context_
+
+_Task context_ can any object, from a simple `String` to any custom class instance you need.
 
 ## Purpose
 
@@ -20,7 +33,7 @@ context-dependent, most of its public methods will contain a parameter related t
 be to bind that context to the bean instance. It can be as simple as providing the context parameter in the constructor,
 but then we stop profiting from Spring's IoC container.
 
-Task Scope allows to associate Spring bean instance with an arbitrary context which is created elsewhere. So one can
+Task Scope allows associating Spring bean instance with an arbitrary context which is created elsewhere. So one can
 create (possibly nested) task scope like so:
 
 ```
@@ -35,7 +48,17 @@ void method() {
 }
 ```
 
-and any `@TaskScoped` bean can inject `TaskScopeContext<T>` to extract the associated value:
+Alternatively, one can bind task scope to the execution of a particular method with AOP:
+
+```
+void method(@TaskContext Object ctx) {
+    // ...
+    // task scope is active for the duration of method
+    // ...
+}
+```
+
+Any `@TaskScoped` bean can inject `TaskScopeContext<T>` to extract the associated value:
 
 ```
 @TaskScoped
@@ -57,6 +80,8 @@ public class Service {
 
 (This is the preferred way to define such bean, although nothing prevents you from just keeping
 the `TaskScopeContext<Task>` reference in bean's field.)
+
+Please see details in [Usage](docs/usage.md).
 
 ### Example use case
 
