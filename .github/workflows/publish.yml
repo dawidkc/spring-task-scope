@@ -27,7 +27,7 @@ jobs:
       - name: Set up Java for publishing to GitHub Packages
         uses: actions/setup-java@v3
         with:
-          java-version: '8'
+          java-version: '11'
           distribution: 'zulu'
       - name: Publish to GitHub Packages
         run: mvn -B -Pgithub,sign -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSPHRASE }} clean deploy
@@ -39,9 +39,9 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
         with:
-          java-version: '8'
+          java-version: '11'
           distribution: 'zulu'
-          server-id: ossrh
+          server-id: central
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
       - name: Publish to the Maven Central Repository
