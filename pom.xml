@@ -104,7 +104,7 @@
 
 
     <properties>
-        <revision>0.0.15</revision>
+        <revision>0.0.16-SNAPSHOT</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
