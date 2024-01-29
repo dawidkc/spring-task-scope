@@ -18,20 +18,71 @@ _Task-scoped beans_:
 
 - exist only for the duration of the scope
 - have access (through injection) to _task context_
+- are local to the thread the task scope exists in
 
-_Task context_ can any object, from a simple `String` to any custom class instance you need.
+_Task context_ can be any object, from a simple `String` to any custom class instance you need.
 
 ## Purpose
 
 Often a bean should only be available within the execution of a particular task, or only makes sense to exist within a
-particular job or execution, or is dependent on arbitrary context. A task scope is a simple solution that allows to
-implement `@TaskScoped` components which can depend on such arbitrary context.
+particular job or execution, or is dependent on arbitrary context. Let's call such service a _task-bound service_.
+
+### Typical approaches
+
+Especially outside IoC container like Spring, one can choose to design such services to either **(A)** consume the task
+context in its methods or **(B)** keep the task context as state.
+
+**For (A)**, _task-bound service_ can be completely stateless and can be a singleton:
+
+```
+class Service {
+    /Result/ method(/TaskContext/ ctx, /actual params/)
+}
+```
+
+The price to pay is that _every_ public task-bound method will take `/TaskContext/` as a parameter. This isn't a big
+deal for 1-2 services. But if you have 4 or more calls on the stack, passing this additional param (including a
+situation when only a dependency needs it) can be cumbersome, or can negatively impact the class design. Note that even
+if a given service didn't require such context at all - but the dependency did - the method must pass the context
+downstream.
+
+**For (B)**, _task-bound service_ has a state:
+
+```
+class Service {
+    /TaskContext/ ctx;
+    Service(/TaskContext/ ctx) {
+        this.ctx = ctx;
+    }
+    /Result/ method(/actual params/)
+}
+```
+
+The price to pay is that in the IoC container, manual creation of such beans (through `new Service(ctx)`) requires the
+user to take control of their lifecycle and dependency injection. Every time such bean is manually created, it needs to
+be fed with all dependencies it requires, along with the `/TaskContext/`.
+
+In case of **(A)**, Spring can easily manage those beans as e.g. singletons. You can `@Autowire` anything inside and it
+would work. But the method params would be riddled with `/TaskContext/`, even if only to pass that param through to
+dependencies. In case of **(B)**, manual creation of objects removes the benefits of using IoC container altogether.
+
+A _task scope_ is a simple solution that allows to implement `@TaskScoped` components which can depend on such arbitrary
+context, without loosing IoC features.
+
+### Stateless vs stateful task-bound services
 
 Often it is a choice between being stateless vs simplifying method signatures. The solution proposed here favours having
-a state in such case (relying on Spring for instance management). The reasoning is following: if a stateless bean is
-context-dependent, most of its public methods will contain a parameter related to that context. A better solution would
-be to bind that context to the bean instance. It can be as simple as providing the context parameter in the constructor,
-but then we stop profiting from Spring's IoC container.
+a state in such case (relying on Spring for instance management).
+
+The reasoning is following: if a stateless bean is context-dependent, most of its public methods will contain a
+parameter related to that context. This seems to effectively disconnect the state of an object and the action being
+executed on that state, which seems not really in line with OOP design.
+
+A better solution would be to bind that context to the bean instance, where the action on that context happens. It can
+be as simple as providing the context parameter in the constructor, but then we stop profiting from Spring's IoC
+container.
+
+### How to use it
 
 Task Scope allows associating Spring bean instance with an arbitrary context which is created elsewhere. So one can
 create (possibly nested) task scope like so:
@@ -83,7 +134,7 @@ the `TaskScopeContext<Task>` reference in bean's field.)
 
 Please see details in [Usage](docs/usage.md).
 
-### Example use case
+## Example use case
 
 Imagine a `Service` which starts processing of an arbitrary task (say, based on changing disk content, received JMS
 message, etc.). This service transfers processing to `SubService1` which may invoke further services, like so:
